@@ -90,11 +90,11 @@ def run_random_test():
 
 root = tk.Tk()
 root.title("USB Forensic Analyzer GUI")
-
+root.geometry("400x300")
 tk.Button(root, text="Normal Scan", command=run_normal_scan, width=30).pack(pady=5)
 tk.Button(root, text="Virus Scan", command=run_virus_scan, width=30).pack(pady=5)
 tk.Button(root, text="Storage Diagnosis", command=run_storage_diagnosis, width=30).pack(pady=5)
-tk.Button(root, text="Performance Test", command=run_performance_test, width=30).pack(pady=5)
+tk.Button(root, text="Sequential I/O Test", command=run_performance_test, width=30).pack(pady=5)
 tk.Button(root, text="Random I/O Test", command=run_random_test, width=30).pack(pady=5)
 tk.Button(root, text="Clear Data", command=run_clear_data, width=30).pack(pady=5)
 tk.Button(root, text="View History", command=run_history, width=30).pack(pady=5)
