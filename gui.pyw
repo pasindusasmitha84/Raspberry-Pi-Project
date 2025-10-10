@@ -1,11 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox, scrolledtext
-from functions import scan_usb_for_viruses, list_usb_devices, detect_potential_threats, diagnose_storage
+from functions import scan_usb_for_viruses, list_usb_devices, detect_potential_threats, diagnose_storage,readfile
 from performance import test_sequential_speed, test_random_speed
 from data import ClearData
 from history import History
 import threading
 from tkinter import ttk
+import os
 
 def show_output(title, content):
     win = tk.Toplevel(root)
@@ -88,18 +89,26 @@ def run_random_test():
 
     threading.Thread(target=test_and_show).start()
 
+def readinfo():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    info_path = os.path.join(base_dir, "info.txt")
+    show_output("USB Forensic Analyzer Info", readfile(info_path))
+
+
+
 root = tk.Tk()
 root.title("USB Forensic Analyzer GUI")
-root.geometry("300x400")
+root.geometry("300x450")
 label=tk.Label(root,text="WELCOME",font=("Arial",14))
 label.pack(pady=10)
+tk.Button(root, text="About Tool", command=readinfo, width=30).pack(pady=5)
 tk.Button(root, text="Normal Scan", command=run_normal_scan, width=30).pack(pady=5)
 tk.Button(root, text="Virus Scan", command=run_virus_scan, width=30).pack(pady=5)
 tk.Button(root, text="Storage Diagnosis", command=run_storage_diagnosis, width=30).pack(pady=5)
 tk.Button(root, text="Sequential I/O Test", command=run_performance_test, width=30).pack(pady=5)
 tk.Button(root, text="Random I/O Test", command=run_random_test, width=30).pack(pady=5)
-tk.Button(root, text="Clear Data", command=run_clear_data, width=30).pack(pady=5)
 tk.Button(root, text="View History", command=run_history, width=30).pack(pady=5)
+tk.Button(root, text="Clear Data", command=run_clear_data, width=30).pack(pady=5)
 tk.Button(root, text="Exit", command=root.quit, width=30).pack(pady=5)
 
 root.mainloop()

@@ -1,0 +1,78 @@
+USB Forensic Analyzer - README.txt
+
+Author: Pasindu  
+Platform: Linux (Tested on Ubuntu-based systems)  
+Dependencies: Python 3.x, fio, dd, tkinter, clamav, entropy/rng modules (custom or external)
+
+Overview:
+----------
+USB Forensic Analyzer is a GUI-based tool designed to evaluate the integrity, randomness, performance, and security of USB storage devices. It provides forensic-grade metrics for entropy, I/O latency, and virus detection, helping identify anomalies, tampering, or degraded performance.
+
+Usage:
+------
+Run the GUI:
+$ usbscan
+
+Features:
+---------
+
+1. WELCOME Tab
+   - Displays initial status and scan options.
+   - Shows connected USB device path (e.g., /dev/sdb1).
+   - Confirms readiness for analysis.
+
+2. Normal Scan
+   - Performs a Random Seed Test on the USB device.
+   - Metrics:
+     • RNG TEST: Verifies pseudo-randomness of sampled data blocks.
+     • ENTROPY: Measures unpredictability (max 8.0 bits/byte).
+     • RANDOMNESS: Custom deviation score.
+     • Result: PASSED/FAILED with summary.
+     • "0 new results" means no new anomalies or flagged zones.
+
+3. Random I/O Test
+   - Benchmarks random read/write speeds using `fio`.
+   - Metrics:
+     • Random Read Speed: e.g., 595KiB/s (609kB/s)
+     • Random Write Speed: e.g., 607KiB/s (622kB/s)
+     • Duration and throughput shown (e.g., 17.4MiB/30029msec)
+     • Zone resets: Indicates flash block erasures (0 = clean)
+
+4. Sequential I/O Test
+   - Uses `dd` to measure sequential read/write speeds.
+   - Metrics:
+     • Write Speed: e.g., 45.2 MB/s
+     • Read Speed: e.g., 48.7 MB/s
+     • File is written and removed after test.
+     • Results logged with timestamp.
+
+5. Virus Scan
+   - Uses ClamAV to scan the USB device for known malware signatures.
+   - Output:
+     • Scan summary with infected file count.
+     • File paths of detected threats (if any).
+     • Timestamped log entry for forensic tracking.
+
+6. Storage Analysis
+   - Displays current usage and capacity of the USB device.
+   - Metrics:
+     • Total Size
+     • Used Space
+     • Free Space
+     • Mount Path
+   - Useful for verifying hidden partitions or unexpected usage spikes.
+
+7. Logging
+   - All scan results are saved to `performance_log.txt`.
+   - Format: ISO timestamp + test type + metrics.
+   - Useful for long-term forensic tracking and comparisons.
+
+8. Error Handling
+   - If no USB is mounted, appropriate messages are shown.
+   - Exceptions are logged for auditability.
+
+Notes:
+------
+• Ensure `fio`, `dd`, and `clamav` are installed and accessible via CLI.
+• Run with appropriate permissions to access /dev/sdX devices.
+• For deeper entropy inspection, consider sector-level scans.

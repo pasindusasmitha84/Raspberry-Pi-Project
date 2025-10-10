@@ -8,6 +8,21 @@ def extract_dd_speed(output):
             return line.split(",")[-1].strip()
     return "Unknown"
 
+def extract_fio_speeds(output):
+    read_speed = write_speed = "Unknown"
+    for line in output.splitlines():
+        if "read:" in line and "IOPS=" in line:
+            parts = line.split(",")
+            for part in parts:
+                if "BW=" in part:
+                    read_speed = part.strip().split("BW=")[-1]
+        elif "write:" in line and "IOPS=" in line:
+            parts = line.split(",")
+            for part in parts:
+                if "BW=" in part:
+                    write_speed = part.strip().split("BW=")[-1]
+    return read_speed, write_speed
+
 def test_sequential_speed():
     mount_path = get_usb_mount_path()
     if not mount_path:
@@ -55,12 +70,14 @@ def test_random_speed():
             "--group_reporting"
         ]
         result = subprocess.run(fio_cmd, capture_output=True, text=True)
-        log_event("Random I/O test completed.")
+        read_speed, write_speed = extract_fio_speeds(result.stdout)
+
+        log_event(f"Random I/O test: Read={read_speed}, Write={write_speed}")
         with open("performance_log.txt", "a") as log:
             timestamp = datetime.datetime.now().isoformat()
-            log.write(f"{timestamp}: Random I/O Test:\n{result.stdout}\n")
+            log.write(f"{timestamp}: Random Read={read_speed}, Write={write_speed}\n")
 
-        return result.stdout
+        return f"Random Read Speed: {read_speed}\nRandom Write Speed: {write_speed}"
     except Exception as e:
         log_event(f"Random I/O test error: {e}")
         return f"Random I/O test failed: {e}"
