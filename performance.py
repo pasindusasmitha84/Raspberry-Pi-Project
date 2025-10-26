@@ -1,6 +1,5 @@
 import subprocess
-import datetime
-from functions import get_usb_mount_path, log_event
+from functions import get_usb_mount_path, log_event,get_timestamp
 import os
 
 def flush_caches():
@@ -69,7 +68,7 @@ def test_sequential_speed():
 
         log_event(f"Sequential test: Write={pi_write} MB/s, Read={pi_read} MB/s")
         with open("performance_log.txt", "a") as log:
-            timestamp = datetime.datetime.now().isoformat()
+            timestamp = get_timestamp()
             log.write(f"{timestamp}: Sequential Write={pi_write} MB/s, Read={pi_read} MB/s\n")
 
         return f"Sequential Write Speed: {pi_write} MB/s\nSequential Read Speed: {pi_read} MB/s"
@@ -133,7 +132,7 @@ def test_random_speed():
 
         log_event(f"Random I/O test: Read={pi_read} MB/s, Write={pi_write} MB/s")
         with open("performance_log.txt", "a") as log:
-            timestamp = datetime.datetime.now().isoformat()
+            timestamp = get_timestamp()
             log.write(f"{timestamp}: Random Read={pi_read} MB/s, Write={pi_write} MB/s\n")
 
         return f"Random Read Speed: {pi_read} MB/s\nRandom Write Speed: {pi_write} MB/s"

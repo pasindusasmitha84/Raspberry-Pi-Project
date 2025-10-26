@@ -3,9 +3,12 @@ import datetime
 import os
 import psutil
 
+def get_timestamp():
+    return datetime.datetime.now().isoformat()
+
 def log_event(message):
     with open("usb_log.txt", "a") as log:
-        timestamp = datetime.datetime.now().isoformat()
+        timestamp = get_timestamp()
         log.write(f"{timestamp}: {message}\n")
 
 def system_safe():
@@ -73,7 +76,7 @@ def scan_usb_for_viruses():
 def list_usb_devices():
     try:
         output = subprocess.check_output(["lsusb"]).decode()
-        timestamp = datetime.datetime.now().isoformat()
+        timestamp = get_timestamp()
         with open("usb_metadata.txt", "a") as meta:
             info = f"{timestamp}:\n{output}\n"
             meta.write(info)
@@ -110,7 +113,7 @@ def detect_potential_threats():
     if suspicious_files:
         with open("potential_threats.txt", "a") as threat_log:
             for entry in suspicious_files:
-                threat_log.write(f"{datetime.datetime.now()}: {entry}\n")
+                threat_log.write(f"{get_timestamp()}: {entry}\n")
         log_event("Potential threats detected and logged.")
         return "\n".join(suspicious_files)
     else:
@@ -131,3 +134,19 @@ def diagnose_storage():
     except Exception as e:
         log_event(f"Storage diagnosis error: {e}")
         return f"Storage diagnosis failed: {e}"
+
+def ClearData():
+    msg1 = clear('potential_threats.txt')
+    msg2 = clear('usb_log.txt')
+    msg3 = clear('usb_metadata.txt')
+    msg4 = clear('performance_log.txt')
+    log_event("User cleared all data.")
+    return f"{msg1}\n{msg2}\n{msg3}\n{msg4}"
+
+def History():
+    threats = readfile('potential_threats.txt')
+    logs = readfile('usb_log.txt')
+    meta = readfile('usb_metadata.txt')
+    perf = readfile('performance_log.txt')
+    log_event("User viewed history.")
+    return f"Potential Threats:\n{threats}\n\nLogs:\n{logs}\n\nMetadata:\n{meta}\n\nPerformance:\n{perf}"

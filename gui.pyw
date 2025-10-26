@@ -1,11 +1,8 @@
 import tkinter as tk
-from tkinter import messagebox, scrolledtext
-from functions import scan_usb_for_viruses, list_usb_devices, detect_potential_threats, diagnose_storage,readfile
+from tkinter import messagebox, scrolledtext, ttk
+from functions import scan_usb_for_viruses, list_usb_devices, detect_potential_threats, diagnose_storage, readfile, ClearData, History
 from performance import test_sequential_speed, test_random_speed
-from data import ClearData
-from history import History
 import threading
-from tkinter import ttk
 import os
 
 def show_output(title, content):
@@ -15,29 +12,31 @@ def show_output(title, content):
     text.insert(tk.END, content)
     text.pack(padx=10, pady=10)
 
+def progress_bar(title,label_text,func,output):
+    progress_win = tk.Toplevel(root)
+    progress_win.title(title)
+
+    label = tk.Label(progress_win, text=label_text)
+    label.pack(pady=10)
+
+    progress = ttk.Progressbar(progress_win, mode='indeterminate', length=300)
+    progress.pack(pady=10)
+    progress.start()
+    def test_and_show():
+        result = func()
+        progress.stop()
+        progress_win.destroy()
+        show_output(output, result)
+
+    threading.Thread(target=test_and_show).start()
+
 def run_normal_scan():
     info = list_usb_devices()
     threats = detect_potential_threats()
     show_output("Normal Scan", f"{info}\n\nPotential Threats:\n{threats}")
 
 def run_virus_scan():
-    progress_win = tk.Toplevel(root)
-    progress_win.title("Scanning...")
-
-    label = tk.Label(progress_win, text="Running ClamAV scan. Please wait...")
-    label.pack(pady=10)
-
-    progress = ttk.Progressbar(progress_win, mode='indeterminate', length=300)
-    progress.pack(pady=10)
-    progress.start()
-
-    def scan_and_show():
-        result = scan_usb_for_viruses()
-        progress.stop()
-        progress_win.destroy()
-        show_output("Virus Scan Results", result)
-
-    threading.Thread(target=scan_and_show).start()
+    progress_bar("Virus Scan","Running ClamAV scan. Please wait...",scan_usb_for_viruses,"Virus Scan Results")
 
 def run_storage_diagnosis():
     result = diagnose_storage()
@@ -52,49 +51,18 @@ def run_history():
     show_output("History", result)
 
 def run_performance_test():
-    progress_win = tk.Toplevel(root)
-    progress_win.title("Testing Performance...")
-
-    label = tk.Label(progress_win, text="Running sequential read/write tests. Please wait...")
-    label.pack(pady=10)
-
-    progress = ttk.Progressbar(progress_win, mode='indeterminate', length=300)
-    progress.pack(pady=10)
-    progress.start()
-
-    def test_and_show():
-        result = test_sequential_speed()
-        progress.stop()
-        progress_win.destroy()
-        show_output("Performance Test", result)
-
-    threading.Thread(target=test_and_show).start()
+    progress_bar("Testing Performance","Running sequential read/write tests. Please wait...",test_sequential_speed,"Performance Test")
 
 def run_random_test():
-    progress_win = tk.Toplevel(root)
-    progress_win.title("Testing Random I/O...")
+    progress_bar("Testing Random I/O","Running random read/write tests. Please wait...",test_random_speed,"Random I/O Test")
 
-    label = tk.Label(progress_win, text="Running random read/write tests. Please wait...")
-    label.pack(pady=10)
-
-    progress = ttk.Progressbar(progress_win, mode='indeterminate', length=300)
-    progress.pack(pady=10)
-    progress.start()
-
-    def test_and_show():
-        result = test_random_speed()
-        progress.stop()
-        progress_win.destroy()
-        show_output("Random I/O Test", result)
-
-    threading.Thread(target=test_and_show).start()
 
 def readinfo():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     info_path = os.path.join(base_dir, "info.txt")
     show_output("USB Forensic Analyzer Info", readfile(info_path))
-
-
+    
+#main window
 
 root = tk.Tk()
 root.title("USB Forensic Analyzer GUI")
