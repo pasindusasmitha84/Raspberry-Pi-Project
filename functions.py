@@ -14,7 +14,7 @@ def log_event(message):
 def system_safe():
     temp = get_temp()
     ram = psutil.virtual_memory().percent
-    if temp > 60 or ram > 85:
+    if temp > 70 or ram > 85:
         log_event("Scan aborted due to unsafe system state.")
         return False, f"Unsafe system state: Temp={temp} C, RAM={ram}%"
     return True, ""
